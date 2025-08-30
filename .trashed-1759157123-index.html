@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hotel Menu</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+    h1 { color: #333; }
+    .menu-item { border: 1px solid #ccc; padding: 10px; margin: 10px; display: inline-block; width: 150px; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .cart { margin-top: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    button { background: green; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 5px; }
+    button:hover { background: darkgreen; }
+  </style>
+</head>
+<body>
+  <h1>Hotel Menu</h1>
+  <div class="menu">
+    <div class="menu-item">
+      <h3>Pizza</h3>
+      <p>₹120</p>
+      <button onclick="addToCart('Pizza',120)">Add to Cart</button>
+    </div>
+    <div class="menu-item">
+      <h3>Burger</h3>
+      <p>₹80</p>
+      <button onclick="addToCart('Burger',80)">Add to Cart</button>
+    </div>
+    <div class="menu-item">
+      <h3>Cold Drink</h3>
+      <p>₹40</p>
+      <button onclick="addToCart('Cold Drink',40)">Add to Cart</button>
+    </div>
+    <div class="menu-item">
+      <h3>Cake</h3>
+      <p>₹60</p>
+      <button onclick="addToCart('Cake',60)">Add to Cart</button>
+    </div>
+  </div>
+
+  <div class="cart">
+    <h2>Cart</h2>
+    <ul id="cart-list"></ul>
+    <h3>Total: ₹<span id="total">0</span></h3>
+    <button onclick="checkout()">Checkout</button>
+  </div>
+
+  <!-- Razorpay Script -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    let cart = [];
+    let total = 0;
+
+    function addToCart(item, price) {
+      cart.push({item, price});
+      total += price;
+      updateCart();
+    }
+
+    function updateCart() {
+      const list = document.getElementById('cart-list');
+      list.innerHTML = "";
+      cart.forEach(c => {
+        const li = document.createElement('li');
+        li.innerText = c.item + " - ₹" + c.price;
+        list.appendChild(li);
+      });
+      document.getElementById('total').innerText = total;
+    }
+
+    function checkout() {
+      var options = {
+        "key": "rzp_test_1DP5mmOlF5G5ag",  // Razorpay Test Key
+        "amount": total * 100, 
+        "currency": "INR",
+        "name": "Hotel Order",
+        "description": "Food Order Payment",
+        "handler": function (response){
+            alert("Payment successful! ID: " + response.razorpay_payment_id);
+        },
+        "prefill": {
+            "name": "Customer",
+            "email": "customer@example.com",
+            "contact": "9999999999"
+        }
+      };
+      var rzp1 = new Razorpay(options);
+      rzp1.open();
+    }
+  </script>
+</body>
+</html>
